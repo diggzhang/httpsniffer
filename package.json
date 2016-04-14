@@ -1,10 +1,14 @@
 {
   "name": "httpsniffer",
   "version": "0.0.1",
-  "description": "",
+  "description": "koa middleware, sniffer on request and response than request to api",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diggzhang/httpsniffer"
   },
   "author": "diggzhang",
   "license": "ISC",
