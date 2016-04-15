@@ -18,7 +18,7 @@ module.exports.logSniffer = function (proxy) {
 
     let defaultUrl = proxy['blackurl'] || "https://api.yangcong345.com/";
     let apptag = proxy['apptag'] || "defaultBackend";
-    let api = proxy['api'] || "http://localhost:4500/api/backend";
+    let api = proxy['api'] || "http://localhost:4600/api/v3_5/httplog";
     return function *logSniffer(next) {
 
         let sendAsEvent = compareUrls(this.request.href, defaultUrl);
