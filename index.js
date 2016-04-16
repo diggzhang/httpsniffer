@@ -5,40 +5,42 @@
  * moment      - get unix timestamp
  * compare-urls- compare 2 urls
  * request     - use for request to api
- * q           - promise
  */
 const onFinished = require("on-finished");
 const moment = require('moment');
 const compareUrls = require('compare-urls');
-var Q = require('q');
 var request = require('request').defaults({
     json: true
 });
 
-function promiseRequest(url, msg) {
-    return Q.Promise(function(resolve, reject) {
-        request({method:'POST', url: url, body: msg}, function(error, response, body) {
+let promiseRequest = function *(url, msg) {
+    let promiseReq = function () {
+        return new Promise(function(resolve, reject) {
+            request({method:'POST', url: url, body: msg}, function(error, response, body) {
 
-            if(error){
-                reject(error);
-                return;
-            }
+                if(error){
+                    reject(error);
+                    return;
+                }
 
-            if(response.statusCode >= 400){
-                var statusCodeError = new Error(options.method + ' ' + options.url + ' failed with status code ' + response.statusCode);
-                statusCodeError.name = 'StatusCodeError';
-                statusCodeError.statusCode = response.statusCode;
-                statusCodeError.request = options;
-                statusCodeError.response = body;
+                if(response.statusCode >= 400){
+                    var statusCodeError = new Error(options.method + ' ' + options.url + ' failed with status code ' + response.statusCode);
+                    statusCodeError.name = 'StatusCodeError';
+                    statusCodeError.statusCode = response.statusCode;
+                    statusCodeError.request = options;
+                    statusCodeError.response = body;
 
-                reject(statusCodeError);
-                return;
-            }
+                    reject(statusCodeError);
+                    return;
+                }
 
-            resolve(body);
+                resolve(body);
+            });
         });
-    });
-}
+    };
+
+    return yield promiseReq();
+};
 
 /*
  * http sniffer function
@@ -85,7 +87,7 @@ module.exports.logSniffer = function (proxy) {
                 }
 
                 try {
-                    promiseRequest(api, logMsg);
+                    promiseRequest(api, logMsg).next();
                 } catch (e) {
                     err = e;
                 }
