@@ -4,12 +4,41 @@
  * on-finished - execute a callback when a request closes, finishes, or errors
  * moment      - get unix timestamp
  * compare-urls- compare 2 urls
- * request-promise-json - http request by promise
+ * request     - use for request to api
+ * q           - promise
  */
 const onFinished = require("on-finished");
 const moment = require('moment');
 const compareUrls = require('compare-urls');
-const request = require('request-promise-json');
+var Q = require('q');
+var request = require('request').defaults({
+    json: true
+});
+
+function promiseRequest(url, msg) {
+    return Q.Promise(function(resolve, reject) {
+        request({method:'POST', url: url, body: msg}, function(error, response, body) {
+
+            if(error){
+                reject(error);
+                return;
+            }
+
+            if(response.statusCode >= 400){
+                var statusCodeError = new Error(options.method + ' ' + options.url + ' failed with status code ' + response.statusCode);
+                statusCodeError.name = 'StatusCodeError';
+                statusCodeError.statusCode = response.statusCode;
+                statusCodeError.request = options;
+                statusCodeError.response = body;
+
+                reject(statusCodeError);
+                return;
+            }
+
+            resolve(body);
+        });
+    });
+}
 
 /*
  * http sniffer function
@@ -22,6 +51,7 @@ module.exports.logSniffer = function (proxy) {
     return function *logSniffer(next) {
 
         let sendAsEvent = compareUrls(this.request.href, defaultUrl);
+
         if (sendAsEvent) {
             yield *next;
         } else {
@@ -55,7 +85,7 @@ module.exports.logSniffer = function (proxy) {
                 }
 
                 try {
-                    request.post(api, logMsg)
+                    promiseRequest(api, logMsg);
                 } catch (e) {
                     err = e;
                 }
