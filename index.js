@@ -9,35 +9,6 @@ var request = require('request').defaults({
     json: true
 });
 
-let promiseRequest = function *(url, msg) {
-    let promiseReq = function () {
-        return new Promise(function(resolve, reject) {
-            request({method:'POST', url: url, body: msg, headers: {"connection": "keep-alive"}}, function(error, response, body) {
-
-                if(error){
-                    reject(error);
-                    return;
-                }
-
-                if(response.statusCode >= 400){
-                    var statusCodeError = new Error(options.method + ' ' + options.url + ' failed with status code ' + response.statusCode);
-                    statusCodeError.name = 'StatusCodeError';
-                    statusCodeError.statusCode = response.statusCode;
-                    statusCodeError.request = options;
-                    statusCodeError.response = body;
-
-                    reject(statusCodeError);
-                    return;
-                }
-
-                resolve(body);
-            });
-        });
-    };
-
-    return yield promiseReq();
-};
-
 /*
  * http sniffer function
  */
@@ -85,7 +56,19 @@ module.exports.logSniffer = function (proxy) {
                 }
 
                 try {
-                    promiseRequest(api, logMsg).next();
+
+                    request({method:'POST', url: api, body: logMsg, headers: {"connection": "keep-alive"}}, function(error, response, body) {
+                        if(error){
+                            err = error;
+                        }
+
+                        if(response.statusCode >= 400){
+                            var statusCodeError = new Error('sniffer failed with status code ' + response.statusCode);
+                            statusCodeError.name = 'StatusCodeError';
+                            statusCodeError.statusCode = response.statusCode;
+                        }
+                    });
+
                 } catch (e) {
                     err = e;
                 }
