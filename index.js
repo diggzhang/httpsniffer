@@ -1,11 +1,9 @@
 "use strict";
 
 /*
- * on-finished - execute a callback when a request closes, finishes, or errors
  * moment      - get unix timestamp
  * request     - use for request to api
  */
-const onFinished = require("on-finished");
 const moment = require('moment');
 var request = require('request').defaults({
     json: true
@@ -52,8 +50,13 @@ module.exports.logSniffer = function (proxy) {
         if (this.request.method == 'HEAD') {
             yield *next;
         } else {
+
             let err;
-            let onResponseFinished = function () {
+            try {
+                yield *next;
+            } catch (e) {
+                err = e;
+            } finally {
                 let logMsg = {
                     apptag: apptag,
                     url: this.request.href,
@@ -87,19 +90,9 @@ module.exports.logSniffer = function (proxy) {
                     err = e;
                 }
 
-            };
-
-            try {
-                yield *next;
-            } catch(e) {
-                err = e;
-            }finally {
-                onFinished(this.response.res, onResponseFinished.bind(this));
             }
 
-            if (err) {
-                throw err;
-            }
+            if (err) throw err;
         }
     };
 };
