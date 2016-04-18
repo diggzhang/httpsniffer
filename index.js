@@ -98,7 +98,7 @@ module.exports.logSniffer = function (proxy) {
             }
 
             if (err) {
-                throw new err;
+                throw err;
             }
         }
     };
