@@ -3,12 +3,10 @@
 /*
  * on-finished - execute a callback when a request closes, finishes, or errors
  * moment      - get unix timestamp
- * compare-urls- compare 2 urls
  * request     - use for request to api
  */
 const onFinished = require("on-finished");
 const moment = require('moment');
-const compareUrls = require('compare-urls');
 var request = require('request').defaults({
     json: true
 });
@@ -16,7 +14,7 @@ var request = require('request').defaults({
 let promiseRequest = function *(url, msg) {
     let promiseReq = function () {
         return new Promise(function(resolve, reject) {
-            request({method:'POST', url: url, body: msg}, function(error, response, body) {
+            request({method:'POST', url: url, body: msg, headers: {"connection": "keep-alive"}}, function(error, response, body) {
 
                 if(error){
                     reject(error);
@@ -47,14 +45,11 @@ let promiseRequest = function *(url, msg) {
  */
 module.exports.logSniffer = function (proxy) {
 
-    let defaultUrl = proxy['blackurl'] || "https://api.yangcong345.com/";
     let apptag = proxy['apptag'] || "defaultBackend";
     let api = proxy['api'] || "http://localhost:4600/api/v3_5/httplog";
     return function *logSniffer(next) {
 
-        let sendAsEvent = compareUrls(this.request.href, defaultUrl);
-
-        if (sendAsEvent) {
+        if (this.request.method == 'HEAD') {
             yield *next;
         } else {
             let err;
