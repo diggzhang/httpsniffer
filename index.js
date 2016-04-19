@@ -5,7 +5,7 @@
  * request     - use for request to api
  */
 const moment = require('moment');
-var request = require('request').defaults({
+const request = require('request').defaults({
     json: true
 });
 
@@ -54,13 +54,12 @@ module.exports.logSniffer = function (proxy) {
 
             request({method:'POST', url: api, body: logMsg, headers: {"connection": "keep-alive"}}, function(error) {
                 if (error) {
-                    err = error;
+                    console.error("httpsniffer:" + error);
                 }
             });
 
         } catch (e) {
             err = e;
-            console.error("httpsniffer:" + err);
         }
 
     };
