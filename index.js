@@ -60,8 +60,8 @@ module.exports.logSniffer = function (proxy) {
 
         } catch (e) {
             err = e;
+            console.error("httpsniffer:" + err);
         }
 
-        if (err) throw err;
     };
 };
