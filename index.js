@@ -18,13 +18,17 @@ module.exports.logSniffer = function (proxy) {
     let api = proxy['api'] || "http://localhost:4600/api/v3_5/httplog";
     return function *logSniffer(next) {
 
-        let err;
+
+        let err = null;
         if (this.request.method == 'HEAD') {
             yield *next;
         }
 
         try{
             yield *next;
+        } catch (e) {
+            err = e.message;
+        } finally {
             let logMsg = {
                 apptag: apptag,
                 url: this.request.href,
@@ -35,6 +39,10 @@ module.exports.logSniffer = function (proxy) {
                 ua: this.header['user-agent'],
                 eventTime: moment().valueOf(),
             };
+
+            if (err) {
+                logMsg['response'] = err;
+            }
 
             if (typeof this.header['remoteip'] != undefined) {
                 logMsg['ip'] = this.header['remoteip'];
@@ -54,12 +62,10 @@ module.exports.logSniffer = function (proxy) {
 
             request({method:'POST', url: api, body: logMsg, headers: {"connection": "keep-alive"}}, function(error) {
                 if (error) {
-                    console.error("httpsniffer:" + error);
+                    console.error("httpSnifferRequest:" + error);
                 }
             });
 
-        } catch (e) {
-            err = e;
         }
 
     };
