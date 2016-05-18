@@ -41,7 +41,6 @@ module.exports.logSniffer = function (proxy) {
             };
 
             if (err) {
-                console.log(err);
                 logMsg['response'] = err.message;
                 logMsg['status'] = err.status;
             }
@@ -67,6 +66,10 @@ module.exports.logSniffer = function (proxy) {
                     console.error("httpSnifferRequest:" + error);
                 }
             });
+
+            if (err) {
+                this.assert(false, err.status, err.message);
+            }
 
         }
 
