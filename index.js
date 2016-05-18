@@ -28,6 +28,7 @@ module.exports.logSniffer = function (proxy) {
             yield *next;
         } catch (e) {
             err = e;
+            throw err;
         } finally {
             let logMsg = {
                 apptag: apptag,
@@ -42,7 +43,7 @@ module.exports.logSniffer = function (proxy) {
 
             if (err) {
                 logMsg['response'] = err.message;
-                logMsg['status'] = err.status;
+                logMsg['status'] = err.status || 500;
             }
 
             if (typeof this.header['remoteip'] != undefined) {
@@ -66,11 +67,6 @@ module.exports.logSniffer = function (proxy) {
                     console.error("httpSnifferRequest:" + error);
                 }
             });
-
-            if (err) {
-                this.assert(false, err.status, err.message);
-            }
-
         }
 
     };
