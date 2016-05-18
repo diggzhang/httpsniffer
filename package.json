@@ -1,6 +1,6 @@
 {
   "name": "httpsniffer",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "koa middleware, sniffer on request and response than request to api",
   "main": "index.js",
   "scripts": {
