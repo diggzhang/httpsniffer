@@ -1,10 +1,8 @@
 "use strict";
 
 /*
- * moment      - get unix timestamp
  * request     - use for request to api
  */
-const moment = require('moment');
 const request = require('request').defaults({
     json: true
 });
