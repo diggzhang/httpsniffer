@@ -37,7 +37,7 @@ module.exports.logSniffer = function (proxy) {
                 response: this.response.body,
                 ua: this.header['user-agent'],
                 device: this.header['device'],
-                eventTime: this.header['eventTime'],
+                eventTime: this.header['eventtime'],
             };
 
             if (err) {
