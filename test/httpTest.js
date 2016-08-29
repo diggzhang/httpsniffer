@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const app = require('./app');
 const request = require('supertest').agent(app.listen());
 const assert = require('assert');
