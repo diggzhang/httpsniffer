@@ -38,6 +38,7 @@ module.exports.logSniffer = function (proxy) {
                     ua: this.header['user-agent'],
                     device: this.header['device'],
                     eventTime: this.header['eventtime'],
+                    apiTime: Date.now()
                 };
 
                 if (err) {
