@@ -17,9 +17,8 @@ module.exports.logSniffer = function (proxy) {
     return function *logSniffer(next) {
 
         let err = null;
-        let expr = /orderProcessor\/users\/query$/
         // filter HEAD method requests
-        if (this.request.method == 'HEAD' || expr.test(this.request.href) ) {
+        if (this.request.method == 'HEAD' || /orderProcessor\/users\/query$/.test(this.request.href) ) {
             yield *next;
         } else {
             try {
