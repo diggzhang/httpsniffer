@@ -14,33 +14,33 @@ module.exports.logSniffer = function (proxy) {
 
     let apptag = proxy['apptag'] || "defaultBackend";
     let api = proxy['api'] || "http://localhost:4600/api/v3_5/httplog";
-    return function *logSniffer(next) {
+    return async function logSniffer( ctx, next) {
 
         let err = null;
         // filter HEAD method requests
-        if (this.request.method == 'HEAD'
-                || /orderProcessor\/users\/query$/.test(this.request.href)
-                || /notifications/.test(this.request.href)
+        if (ctx.request.method == 'HEAD'
+                || /orderProcessor\/users\/query$/.test(ctx.request.href)
+                || /notifications/.test(ctx.request.href)
 
         ) {
-            yield *next;
+            await next();
         } else {
             try {
-                yield *next;
+                await next();
             } catch (e) {
                 err = e;
                 throw err;
             } finally {
                 let logMsg = {
                     apptag: apptag,
-                    url: this.request.href,
-                    method: this.request.method,
-                    status: this.status,
-                    request: this.request.body,
-                    response: this.response.body,
-                    ua: this.header['user-agent'],
-                    device: this.header['device'],
-                    eventTime: this.header['eventtime'],
+                    url: ctx.request.href,
+                    method: ctx.request.method,
+                    status: ctx.status,
+                    request: ctx.request.body,
+                    response: ctx.response.body,
+                    ua: ctx.header['user-agent'],
+                    device: ctx.header['device'],
+                    eventTime: ctx.header['eventtime'],
                     apiTime: Date.now()
                 };
 
@@ -49,18 +49,18 @@ module.exports.logSniffer = function (proxy) {
                     logMsg['status'] = err.status || 500;
                 }
 
-                if (typeof this.header['remoteip'] != undefined) {
-                    logMsg['ip'] = this.header['remoteip'];
-                } else if (this.get('X-Forwarded-For') != '') {
-                    let forwardedIpsStr = this.get('X-Forwarded-For');
+                if (typeof ctx.header['remoteip'] != undefined) {
+                    logMsg['ip'] = ctx.header['remoteip'];
+                } else if (ctx.get('X-Forwarded-For') != '') {
+                    let forwardedIpsStr = ctx.get('X-Forwarded-For');
                     let forwardedIp = forwardedIpsStr.split(',')[0];
                     logMsg['ip'] = forwardedIp;
                 } else {
                     logMsg['ip'] = undefined;
                 }
 
-                if (this.header['authorization'] != undefined) {
-                    logMsg['token'] = this.header['authorization'];
+                if (ctx.header['authorization'] != undefined) {
+                    logMsg['token'] = ctx.header['authorization'];
                 } else {
                     logMsg['token'] = undefined;
                 }
