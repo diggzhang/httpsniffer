@@ -21,7 +21,9 @@ module.exports.logSniffer = function (proxy) {
         if (ctx.request.method == 'HEAD'
                 || /orderProcessor\/users\/query$/.test(ctx.request.href)
                 || /notifications/.test(ctx.request.href)
-
+                || /cosplay/.test(this.request.href)
+                || /task/.test(this.request.href)
+                || /teacherShows/.test(this.request.href)
         ) {
             await next();
         } else {
