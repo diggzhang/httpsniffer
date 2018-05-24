@@ -21,7 +21,11 @@ module.exports.logSniffer = function (proxy) {
         if (this.request.method == 'HEAD'
                 || /orderProcessor\/users\/query$/.test(this.request.href)
                 || /notifications/.test(this.request.href)
-
+                || /cosplay/.test(this.request.href)
+                || /task/.test(this.request.href)
+                || /teacherShows/.test(this.request.href)
+                || /course-tree/.test(this.request.href)
+                || /parents/.test(this.request.href)
         ) {
             yield *next;
         } else {
