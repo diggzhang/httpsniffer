@@ -26,6 +26,8 @@ module.exports.logSniffer = function (proxy) {
                 || /teacherShows/.test(this.request.href)
                 || /course-tree/.test(this.request.href)
                 || /parents/.test(this.request.href)
+                || /login/.test(this.request.href)
+                || /signup/.test(this.request.href)
         ) {
             yield *next;
         } else {
